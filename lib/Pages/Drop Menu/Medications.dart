@@ -1,4 +1,3 @@
-import 'package:diacare360/Pages/Utility/DropMenu.dart';
 import 'package:flutter/material.dart';
 
 class Medications extends StatefulWidget {
@@ -37,7 +36,6 @@ class _MedicationsState extends State<Medications> {
           textAlign: TextAlign.center, // Centers the text for uniform display
         ),
       ),
-      drawer: const Dropmenu(),
     );
   }
 }

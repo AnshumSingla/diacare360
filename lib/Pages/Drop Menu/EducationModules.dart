@@ -1,4 +1,3 @@
-import 'package:diacare360/Pages/Utility/DropMenu.dart';
 import 'package:flutter/material.dart';
 
 class Educationmodules extends StatefulWidget {
@@ -35,7 +34,6 @@ class _EducationmodulesState extends State<Educationmodules> {
           textAlign: TextAlign.center, // Centers the text for uniform display
         ),
       ),
-      drawer: const Dropmenu(),
     );
   }
 }

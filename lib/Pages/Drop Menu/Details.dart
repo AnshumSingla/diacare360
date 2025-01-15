@@ -1,4 +1,3 @@
-import 'package:diacare360/Pages/Utility/DropMenu.dart';
 import 'package:flutter/material.dart';
 
 class Details extends StatefulWidget {
@@ -13,12 +12,14 @@ class _DetailsState extends State<Details> {
   Widget build(BuildContext context) {
     // Responsive text styles
     TextStyle titleTextStyle = TextStyle(
-      fontSize: MediaQuery.of(context).size.width * 0.05, // Scales with device width
+      fontSize:
+          MediaQuery.of(context).size.width * 0.05, // Scales with device width
       fontWeight: FontWeight.bold,
     );
 
     TextStyle bodyTextStyle = TextStyle(
-      fontSize: MediaQuery.of(context).size.width * 0.04, // Scales with device width
+      fontSize:
+          MediaQuery.of(context).size.width * 0.04, // Scales with device width
     );
 
     return Scaffold(
@@ -35,7 +36,6 @@ class _DetailsState extends State<Details> {
           textAlign: TextAlign.center, // Centers the text
         ),
       ),
-      drawer: const Dropmenu(),
     );
   }
 }

@@ -1,14 +1,9 @@
-import 'package:diacare360/Pages/State/selectedIndex.dart';
 import 'package:diacare360/Pages/loginPage.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => SelectedIndexProvider(),
-      child: const MyApp(),
-    ),
+    const MyApp(),
   );
 }
 
