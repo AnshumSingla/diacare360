@@ -1,9 +1,9 @@
-import 'package:diacare360/Pages/Drop%20Menu/Details.dart';
-import 'package:diacare360/Pages/Drop%20Menu/Diet.dart';
-import 'package:diacare360/Pages/Drop%20Menu/EducationModules.dart';
-import 'package:diacare360/Pages/Drop%20Menu/Excercise.dart';
-import 'package:diacare360/Pages/Drop%20Menu/Medications.dart';
-import 'package:diacare360/Pages/Drop%20Menu/bloodGlucose.dart';
+import 'package:diacare360/Pages/homePageGrid/Details.dart';
+import 'package:diacare360/Pages/homePageGrid/Diet.dart';
+import 'package:diacare360/Pages/homePageGrid/EducationModules.dart';
+import 'package:diacare360/Pages/homePageGrid/Excercise.dart';
+import 'package:diacare360/Pages/homePageGrid/Medications.dart';
+import 'package:diacare360/Pages/homePageGrid/bloodGlucose.dart';
 import 'package:flutter/material.dart';
 
 class homeGrid extends StatefulWidget {
@@ -74,7 +74,7 @@ class _homeGrid extends State<homeGrid> {
                     images[index],
                     width: 160,
                     height: 160,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.fitWidth,
                   ),
                 )
               ],
