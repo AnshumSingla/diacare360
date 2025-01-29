@@ -13,6 +13,69 @@ class _BloodGlucoseState extends State<BloodGlucose> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   final TextEditingController controller = TextEditingController();
 
+  // Method to check for 3 consecutive high values
+  void checkForAlert() {
+    if (points.dayPointData.length >= 3) {
+      // Get the last three data points
+      List<points.PointXY> lastThree =
+          points.dayPointData.sublist(points.dayPointData.length - 3);
+
+      // Check if all three values are greater than 250
+      bool isHigh = lastThree.every((point) => point.bg > 250);
+      bool isLow = lastThree.any((point) => point.bg < 70);
+      bool isVeryHIgh = lastThree.any((point) => point.bg > 300);
+      if (isHigh) {
+        // Display an alert if the condition is met
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Alert"),
+            content: const Text("Please contact your doctor immediately"),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+      if (isLow) {
+        // Display an alert if the condition is met
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Alert"),
+            content: const Text("Your Blood Glucose is too low."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+      if (isVeryHIgh) {
+        // Display an alert if the condition is met
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Alert"),
+            content: const Text(
+                "Your Blood Glucose is Really high consult doctor immediately."),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text("OK"),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -88,7 +151,7 @@ class _BloodGlucoseState extends State<BloodGlucose> {
                       flex: 1,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          shape: CircleBorder(),
+                          shape: const CircleBorder(),
                           padding: EdgeInsets
                               .zero, // Remove internal padding to fit the button perfectly
                         ),
@@ -97,11 +160,10 @@ class _BloodGlucoseState extends State<BloodGlucose> {
                             final value = double.tryParse(controller.text);
                             if (value != null) {
                               // Add the valid value to the points.dayPointData
-                              setState(
-                                () {
-                                  points.getData(value);
-                                },
-                              );
+                              setState(() {
+                                points.getData(value); // Add data point
+                                checkForAlert(); // Check for alert
+                              });
                               controller
                                   .clear(); // Clear the input field after adding
                             }
