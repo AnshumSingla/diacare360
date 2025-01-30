@@ -15,65 +15,43 @@ class _BloodGlucoseState extends State<BloodGlucose> {
 
   // Method to check for 3 consecutive high values
   void checkForAlert() {
-    if (points.dayPointData.length >= 3) {
-      // Get the last three data points
-      List<points.PointXY> lastThree =
-          points.dayPointData.sublist(points.dayPointData.length - 3);
+    if (points.dayPointData.isNotEmpty) {
+      // Get the last three data points if available
+      List<points.PointXY> lastThree = points.dayPointData.length >= 3
+          ? points.dayPointData.sublist(points.dayPointData.length - 3)
+          : [];
 
-      // Check if all three values are greater than 250
-      bool isHigh = lastThree.every((point) => point.bg > 250);
-      bool isLow = lastThree.any((point) => point.bg < 70);
-      bool isVeryHIgh = lastThree.any((point) => point.bg > 300);
-      if (isHigh) {
-        // Display an alert if the condition is met
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Alert"),
-            content: const Text("Please contact your doctor immediately"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
-      }
-      if (isLow) {
-        // Display an alert if the condition is met
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Alert"),
-            content: const Text("Your Blood Glucose is too low."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
-      }
-      if (isVeryHIgh) {
-        // Display an alert if the condition is met
-        showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: const Text("Alert"),
-            content: const Text(
-                "Your Blood Glucose is Really high consult doctor immediately."),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("OK"),
-              ),
-            ],
-          ),
-        );
+      // Check if last three values are greater than 250
+      bool isHigh =
+          lastThree.isNotEmpty && lastThree.every((point) => point.bg > 250);
+      bool isLow = points.dayPointData.last.bg < 70;
+      bool isVeryHigh = points.dayPointData.last.bg > 300;
+
+      if (isVeryHigh) {
+        showAlert(
+            "Your Blood Glucose is really high. Consult your doctor immediately.");
+      } else if (isLow) {
+        showAlert("Your Blood Glucose is too low.");
+      } else if (isHigh) {
+        showAlert("Please contact your doctor immediately.");
       }
     }
+  }
+
+  void showAlert(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Alert"),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
