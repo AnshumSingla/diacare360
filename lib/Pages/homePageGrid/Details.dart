@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Import intl package for date formatting
+import 'package:intl/intl.dart';
+import 'package:diacare360/Pages/Utility/tables.dart' as tables;
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 class Details extends StatefulWidget {
   const Details({super.key});
@@ -14,22 +16,30 @@ class _DetailsState extends State<Details> {
   double bmi = 0;
   double diameter = 0;
   late TextEditingController dateController;
+  late TextEditingController weightController;
+  late TextEditingController heightController;
+  late TextEditingController diameterController;
   String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
 
-    // Initialize the date controller with today's date in dd-MM-yyyy format
+    // Initialize controllers
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('dd-MM-yyyy').format(now);
     dateController = TextEditingController(text: formattedDate);
+    weightController = TextEditingController();
+    heightController = TextEditingController();
+    diameterController = TextEditingController();
   }
 
   @override
   void dispose() {
-    dateController
-        .dispose(); // Clean up the controller when the widget is disposed
+    dateController.dispose();
+    weightController.dispose();
+    heightController.dispose();
+    diameterController.dispose();
     super.dispose();
   }
 
@@ -74,40 +84,46 @@ class _DetailsState extends State<Details> {
                 },
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 children: <TableRow>[
-                  _buildTableRow('Date', dateController, (value) {
-                    setState(() {
-                      if (!isValidDate(value)) {
-                        errorMessage =
-                            'Invalid date format. Please use dd-mm-yyyy.';
-                      } else {
-                        errorMessage = ''; // Clear the error message if valid
-                      }
-                    });
-                  }),
-                  _buildTableRow('Weight (Kg)', 'Enter Weight', (value) {
-                    setState(() {
-                      weight = double.tryParse(value) ??
-                          0; // Storing the weight value
-                      _calculateBMI(); // Recalculate BMI when weight changes
-                    });
-                  }),
-                  _buildTableRow('Height (cm)', 'Enter Height', (value) {
-                    setState(() {
-                      height = double.tryParse(value) ??
-                          0; // Storing the height value
-                      _calculateBMI(); // Recalculate BMI when height changes
-                    });
-                  }),
-                  _buildTableRow('BMI (kg/m2)', bmi.toStringAsFixed(2), null,
-                      isEditable: false), // BMI field is now non-editable
-                  _buildTableRow('Waist Diameter(cm)', 'Enter Diameter',
-                      (value) {
-                    setState(() {
-                      diameter = double.tryParse(value) ??
-                          0; // Storing the weight value
-                      _calculateBMI(); // Recalculate BMI when weight changes
-                    });
-                  }),
+                  tables.buildTableRow('Date', '', dateController),
+                  tables.buildTableRow(
+                    'Weight (Kg)',
+                    'Enter Weight',
+                    weightController,
+                    onChanged: (value) {
+                      setState(() {
+                        weight = double.tryParse(value) ?? 0;
+                        _calculateBMI();
+                      });
+                    },
+                  ),
+                  tables.buildTableRow(
+                    'Height (cm)',
+                    'Enter Height',
+                    heightController,
+                    onChanged: (value) {
+                      setState(() {
+                        height = double.tryParse(value) ?? 0;
+                        _calculateBMI();
+                      });
+                    },
+                  ),
+                  tables.buildTableRow(
+                    'BMI (kg/m²)',
+                    bmi.toStringAsFixed(2),
+                    null,
+                    isEditable: false, // BMI field is non-editable
+                  ),
+                  tables.buildTableRow(
+                    'Waist Diameter (cm)',
+                    'Enter Diameter',
+                    diameterController,
+                    onChanged: (value) {
+                      setState(() {
+                        diameter = double.tryParse(value) ?? 0;
+                        _calculateBMI();
+                      });
+                    },
+                  ),
                 ],
               ),
               if (errorMessage.isNotEmpty)
@@ -115,58 +131,13 @@ class _DetailsState extends State<Details> {
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
                     errorMessage,
-                    style: TextStyle(color: Colors.red),
+                    style: const TextStyle(color: Colors.red),
                   ),
                 ),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  // Helper function to build each row of the table
-  TableRow _buildTableRow(
-      String label, dynamic hint, Function(String)? onChanged,
-      {bool isEditable = true}) {
-    return TableRow(
-      children: <Widget>[
-        Container(
-          height: 40,
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 18),
-          ),
-        ),
-        TableCell(
-          child: Container(
-            height: 40,
-            padding: const EdgeInsets.all(8),
-            child: TextFormField(
-              controller: hint is TextEditingController
-                  ? hint
-                  : null, // Use controller for date field
-              onChanged: onChanged,
-              decoration: InputDecoration(
-                hintText: hint is String ? hint : 'Enter Date',
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              enabled:
-                  isEditable, // Set 'enabled' to false to make it non-editable
-              keyboardType:
-                  TextInputType.text, // Allow text input for date field
-            ),
-          ),
-        ),
-      ],
     );
   }
 
