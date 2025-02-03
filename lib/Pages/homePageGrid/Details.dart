@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:diacare360/Pages/Utility/tables.dart' as tables;
-import 'package:syncfusion_flutter_gauges/gauges.dart';
+import 'package:diacare360/Pages/Utility/radialGuage.dart' as guage;
 
 class Details extends StatefulWidget {
   const Details({super.key});
@@ -45,6 +45,9 @@ class _DetailsState extends State<Details> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
     // Responsive text styles
     TextStyle titleTextStyle = TextStyle(
       fontSize:
@@ -64,77 +67,74 @@ class _DetailsState extends State<Details> {
           style: titleTextStyle,
         ),
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              Text(
-                "Details about Anthropometry",
-                style: bodyTextStyle,
-                textAlign: TextAlign.center, // Centers the text
-              ),
-              const SizedBox(height: 16),
-              Table(
-                border: TableBorder.all(),
-                columnWidths: const <int, TableColumnWidth>{
-                  0: IntrinsicColumnWidth(),
-                  1: FlexColumnWidth(),
-                  2: FixedColumnWidth(64),
-                },
-                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                children: <TableRow>[
-                  tables.buildTableRow('Date', '', dateController),
-                  tables.buildTableRow(
-                    'Weight (Kg)',
-                    'Enter Weight',
-                    weightController,
-                    onChanged: (value) {
-                      setState(() {
-                        weight = double.tryParse(value) ?? 0;
-                        _calculateBMI();
-                      });
-                    },
-                  ),
-                  tables.buildTableRow(
-                    'Height (cm)',
-                    'Enter Height',
-                    heightController,
-                    onChanged: (value) {
-                      setState(() {
-                        height = double.tryParse(value) ?? 0;
-                        _calculateBMI();
-                      });
-                    },
-                  ),
-                  tables.buildTableRow(
-                    'BMI (kg/m²)',
-                    bmi.toStringAsFixed(2),
-                    null,
-                    isEditable: false, // BMI field is non-editable
-                  ),
-                  tables.buildTableRow(
-                    'Waist Diameter (cm)',
-                    'Enter Diameter',
-                    diameterController,
-                    onChanged: (value) {
-                      setState(() {
-                        diameter = double.tryParse(value) ?? 0;
-                        _calculateBMI();
-                      });
-                    },
-                  ),
-                ],
-              ),
-              if (errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    errorMessage,
-                    style: const TextStyle(color: Colors.red),
-                  ),
+      body: SingleChildScrollView(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                Table(
+                  border: TableBorder.all(),
+                  columnWidths: const <int, TableColumnWidth>{
+                    0: IntrinsicColumnWidth(),
+                    1: FlexColumnWidth(),
+                    2: FixedColumnWidth(64),
+                  },
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: <TableRow>[
+                    tables.buildTableRow('Date', '', dateController),
+                    tables.buildTableRow(
+                      'Weight (Kg)',
+                      'Enter Weight',
+                      weightController,
+                      onChanged: (value) {
+                        setState(() {
+                          weight = double.tryParse(value) ?? 0;
+                          _calculateBMI();
+                        });
+                      },
+                    ),
+                    tables.buildTableRow(
+                      'Height (cm)',
+                      'Enter Height',
+                      heightController,
+                      onChanged: (value) {
+                        setState(() {
+                          height = double.tryParse(value) ?? 0;
+                          _calculateBMI();
+                        });
+                      },
+                    ),
+                    tables.buildTableRow(
+                      'BMI (kg/m²)',
+                      bmi.toStringAsFixed(2),
+                      null,
+                      isEditable: false, // BMI field is non-editable
+                    ),
+                    tables.buildTableRow(
+                      'Waist Diameter (cm)',
+                      'Enter Diameter',
+                      diameterController,
+                      onChanged: (value) {
+                        setState(() {
+                          diameter = double.tryParse(value) ?? 0;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-            ],
+                if (errorMessage.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      errorMessage,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ),
+                SizedBox(height: screenHeight * 0.1),
+                guage.radialGauge('BMI', bmi),
+              ],
+            ),
           ),
         ),
       ),
