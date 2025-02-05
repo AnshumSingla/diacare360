@@ -2,7 +2,7 @@ import 'package:diacare360/Pages/homePageGrid/Details.dart';
 import 'package:diacare360/Pages/homePageGrid/Diet.dart';
 import 'package:diacare360/Pages/homePageGrid/EducationModules.dart';
 import 'package:diacare360/Pages/homePageGrid/Excercise.dart';
-import 'package:diacare360/Pages/homePageGrid/Medications.dart';
+import 'package:diacare360/Pages/homePageGrid/medication/Medications.dart';
 import 'package:diacare360/Pages/homePageGrid/bloodGlucose.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +18,7 @@ class _homeGrid extends State<homeGrid> {
   final List<String> images = [
     'assets/images/edit.jpg',
     'assets/images/blood.jpg',
-    'assets/images/exercise.jpg',
+    'assets/images/runner.jpg',
     'assets/images/medication.jpg',
     'assets/images/diet.jpg',
     'assets/images/book.jpg'

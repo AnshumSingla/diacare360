@@ -34,37 +34,78 @@ class _DetailsState extends State<Details> {
     diameterController = TextEditingController();
   }
 
-  @override
-  void dispose() {
-    dateController.dispose();
-    weightController.dispose();
-    heightController.dispose();
-    diameterController.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   dateController.dispose();
+  //   weightController.dispose();
+  //   heightController.dispose();
+  //   diameterController.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // Responsive text styles
-    TextStyle titleTextStyle = TextStyle(
-      fontSize:
-          MediaQuery.of(context).size.width * 0.05, // Scales with device width
-      fontWeight: FontWeight.bold,
-    );
+    // Define table data (Labels in left, Input fields in right)
+    List<List<String>> labels = [
+      ['Date'], 
+      ['Weight (Kg)'],
+      ['Height (cm)'],
+      ['BMI (kg/m²)'],
+      ['Waist Diameter (cm)']
+    ];
 
-    TextStyle bodyTextStyle = TextStyle(
-      fontSize:
-          MediaQuery.of(context).size.width * 0.04, // Scales with device width
-    );
+    List<List<TextEditingController?>> controllers = [
+      [dateController],
+      [weightController],
+      [heightController],
+      [null], // BMI is calculated dynamically
+      [diameterController]
+    ];
+
+    List<List<bool>> isEditable = [
+      [true],  // Date is editable
+      [true],  // Weight is editable
+      [true],  // Height is editable
+      [false], // BMI is not editable
+      [true]   // Waist Diameter is editable
+    ];
+
+    List<List<Function(String)?>> onChanged = [
+      [(value) {}], // No action needed for Date
+      [(value) {
+        setState(() {
+          weight = double.tryParse(value) ?? 0;
+          _calculateBMI();
+          checkIfDetailsEntered();
+        });
+      }],
+      [(value) {
+        setState(() {
+          height = double.tryParse(value) ?? 0;
+          _calculateBMI();
+          checkIfDetailsEntered();
+        });
+      }],
+      [null], // BMI is auto-calculated
+      [(value) {
+        setState(() {
+          diameter = double.tryParse(value) ?? 0;
+          checkIfDetailsEntered();
+        });
+      }]
+    ];
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
           "Anthropometric Details",
-          style: titleTextStyle,
+          style: TextStyle(
+            fontSize: screenWidth * 0.05,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -73,55 +114,13 @@ class _DetailsState extends State<Details> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                Table(
-                  border: TableBorder.all(),
-                  columnWidths: const <int, TableColumnWidth>{
-                    0: IntrinsicColumnWidth(),
-                    1: FlexColumnWidth(),
-                    2: FixedColumnWidth(64),
-                  },
-                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                  children: <TableRow>[
-                    tables.buildTableRow('Date', '', dateController),
-                    tables.buildTableRow(
-                      'Weight (Kg)',
-                      'Enter Weight',
-                      weightController,
-                      onChanged: (value) {
-                        setState(() {
-                          weight = double.tryParse(value) ?? 0;
-                          _calculateBMI();
-                        });
-                      },
-                    ),
-                    tables.buildTableRow(
-                      'Height (cm)',
-                      'Enter Height',
-                      heightController,
-                      onChanged: (value) {
-                        setState(() {
-                          height = double.tryParse(value) ?? 0;
-                          _calculateBMI();
-                        });
-                      },
-                    ),
-                    tables.buildTableRow(
-                      'BMI (kg/m²)',
-                      bmi.toStringAsFixed(2),
-                      null,
-                      isEditable: false, // BMI field is non-editable
-                    ),
-                    tables.buildTableRow(
-                      'Waist Diameter (cm)',
-                      'Enter Diameter',
-                      diameterController,
-                      onChanged: (value) {
-                        setState(() {
-                          diameter = double.tryParse(value) ?? 0;
-                        });
-                      },
-                    ),
-                  ],
+                tables.buildTable(
+                  rows: 5,
+                  columns: 2,
+                  labels: labels,        // Labels in first column (Left)
+                  controllers: controllers, // Form fields in second column (Right)
+                  isEditable: isEditable,
+                  onChanged: onChanged,
                 ),
                 if (errorMessage.isNotEmpty)
                   Padding(
@@ -131,7 +130,7 @@ class _DetailsState extends State<Details> {
                       style: const TextStyle(color: Colors.red),
                     ),
                   ),
-                SizedBox(height: screenHeight * 0.1),
+                SizedBox(height: screenHeight * 0.05),
                 guage.radialGauge('BMI', bmi),
               ],
             ),
@@ -141,22 +140,20 @@ class _DetailsState extends State<Details> {
     );
   }
 
-  // Function to validate date in dd-MM-yyyy format
-  bool isValidDate(String date) {
-    RegExp dateExp = RegExp(r'^\d{2}-\d{2}-\d{4}$');
-    return dateExp.hasMatch(date);
-  }
-
-  // Function to calculate BMI when weight or height changes
+  // Function to calculate BMI
   void _calculateBMI() {
     if (weight > 0 && height > 0) {
       setState(() {
-        bmi = weight / ((height / 100) * (height / 100)); // BMI formula
+        bmi = weight / ((height / 100) * (height / 100));
       });
     } else {
       setState(() {
-        bmi = 0; // Reset BMI if either weight or height is invalid
+        bmi = 0;
       });
     }
+  }
+
+  bool checkIfDetailsEntered() {
+    return weight != 0 || height != 0 || bmi != 0 || diameter != 0;
   }
 }
